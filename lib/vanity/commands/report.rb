@@ -9,13 +9,14 @@ module Vanity
     
     # Render the named template.  Used for reporting and the dashboard.
     def render opts={}
+      path = opts[:file]
       locals = (opts[:locals] || {}).merge :playground => self
+
       keys = locals.keys
       struct = Struct.new(*keys)
       struct.send :include, Render
       locals = struct.new(*locals.values_at(*keys))
-      dir, base = File.split(opts[:file])
-      path = File.join(dir, "_#{base}")
+
       erb = ERB.new(File.read(path), nil, '<>')
       erb.filename = path
       erb.result(locals.instance_eval { binding })
@@ -48,7 +49,7 @@ module Vanity
       # Generate an HTML report.  Outputs to the named file, or stdout with no
       # arguments.
       def report(output = nil)
-        html = render(Vanity.template("report"))
+        html = render :file => Vanity.template("_report")
         if output
           File.open output, 'w' do |file|
             file.write html
@@ -58,7 +59,6 @@ module Vanity
           $stdout.write html
         end
       end
-
     end
   end
 end
