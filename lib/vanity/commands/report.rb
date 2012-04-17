@@ -8,13 +8,13 @@ module Vanity
   module Render
     
     # Render the named template.  Used for reporting and the dashboard.
-    def render(path, locals = {})
-      locals[:playground] = self
+    def render opts={}
+      locals = (opts[:locals] || {}).merge :playground => self
       keys = locals.keys
       struct = Struct.new(*keys)
       struct.send :include, Render
       locals = struct.new(*locals.values_at(*keys))
-      dir, base = File.split(path)
+      dir, base = File.split(opts[:file])
       path = File.join(dir, "_#{base}")
       erb = ERB.new(File.read(path), nil, '<>')
       erb.filename = path
