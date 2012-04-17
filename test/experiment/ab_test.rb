@@ -13,7 +13,11 @@ class AbTestController < ActionController::Base
   end
 
   def test_capture
-    render :inline=>"<% ab_test :simple do |value| %><%= value %><% end %>"
+    if Rails.version.to_i == 3
+      render :inline=>"<%= ab_test :simple do |value| %><%= value %><% end %>"
+    else
+      render :inline=>"<% ab_test :simple do |value| %><%= value %><% end %>"
+    end
   end
 
   def track
@@ -230,7 +234,7 @@ class AbTestTest < ActionController::TestCase
   # -- A/B helper methods --
 
   def test_fail_if_no_experiment
-    assert_raise NameError do
+    assert_raise Vanity::NoExperimentError do
       get :test_render
     end
   end
@@ -276,7 +280,7 @@ class AbTestTest < ActionController::TestCase
       metrics :coolness
     end
     responses = Array.new(100) do
-      @controller.send(:cookies).clear
+      @controller.send(:cookies).each{ |cookie| @controller.send(:cookies).delete(cookie.first) }
       get :track
       @response.body
     end

@@ -1,4 +1,5 @@
 require "rake/testtask"
+require 'appraisal'
 
 # -- Building stuff --
 
@@ -77,7 +78,7 @@ task "test:adapters", :adapter do |t, args|
   adapters = args.adapter ? [args.adapter] : ADAPTERS
   adapters.each do |adapter|
     puts "** Testing #{adapter} adapter"
-    sh "rake test DB=#{adapter} #{'--trace' if Rake.application.options.trace}"
+    sh "rake appraisal test DB=#{adapter} #{'--trace' if Rake.application.options.trace}"
   end
 end
 

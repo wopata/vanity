@@ -34,7 +34,7 @@ class ExperimentTest < Test::Unit::TestCase
   # -- Loading experiments --
 
   def test_fails_if_cannot_load_named_experiment
-    assert_raises NameError do
+    assert_raises Vanity::NoExperimentError do
       experiment(:ice_cream_flavor)
     end
   end
@@ -93,7 +93,7 @@ class ExperimentTest < Test::Unit::TestCase
       f.write <<-RUBY
         ab_test "Ice Cream Flavor" do
           metrics :happiness
-          expects(:save)
+          expects(:save).at_least_once
         end
       RUBY
     end
@@ -102,7 +102,7 @@ class ExperimentTest < Test::Unit::TestCase
 
   def test_experiment_has_created_timestamp
     new_ab_test(:ice_cream_flavor) { metrics :happiness }
-    assert_instance_of Time, experiment(:ice_cream_flavor).created_at
+    assert_kind_of Time, experiment(:ice_cream_flavor).created_at
     assert_in_delta experiment(:ice_cream_flavor).created_at.to_i, Time.now.to_i, 1
   end
  

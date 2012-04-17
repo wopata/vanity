@@ -1,8 +1,9 @@
+language: ruby
+bundler_args: --without development
+script: 'rake appraisal test'
 rvm:
 - 1.8.7
 - 1.9.2
-gemfile:
-- Gemfile
 env:
 - DB=mongodb
 - DB=redis
@@ -10,4 +11,5 @@ env:
 #- DB=postgres
 before_script:
 - "mysql -e 'create database vanity_test;' >/dev/null"
+- "rake appraisal:install"
 #- "psql -c 'create database vanity_test;' -U postgres >/dev/null"
