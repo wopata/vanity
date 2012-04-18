@@ -1,4 +1,4 @@
-module Vanity  
+module Vanity
   # Helper methods available on Object.
   #
   # @example From ERB template
@@ -17,7 +17,7 @@ module Vanity
   #     end
   #   end
   module Helpers
-    
+
     # This method returns one of the alternative values in the named A/B test.
     #
     # @example A/B two alternatives for a page
@@ -48,6 +48,10 @@ module Vanity
       else
         value
       end
+    end
+
+    def ab_test?(name, value)
+      ab_test(name) == value
     end
 
     # Tracks an action associated with a metric.
