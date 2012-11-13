@@ -78,8 +78,14 @@ module Vanity
 
       def initialize(options)
         @options = options.inject({}) { |h,kv| h[kv.first.to_s] = kv.last ; h }
-        @options["adapter"] = @options["active_record_adapter"] if @options["active_record_adapter"]
-        VanityRecord.establish_connection(@options)
+        if manages_connections?
+          @options["adapter"] = @options["active_record_adapter"]
+          VanityRecord.establish_connection(@options)
+        end
+      end
+
+      def manages_connections?
+        @options.key? 'active_record_adapter'
       end
 
       def active?
@@ -87,11 +93,11 @@ module Vanity
       end
 
       def disconnect!
-        VanityRecord.connection.disconnect! if active?
+        VanityRecord.connection.disconnect! if manages_connections? && active?
       end
 
       def reconnect!
-        VanityRecord.connection.reconnect!
+        VanityRecord.connection.reconnect! if manages_connections?
       end
 
       def flushdb
